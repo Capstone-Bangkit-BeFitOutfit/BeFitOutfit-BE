@@ -35,63 +35,6 @@ class _user {
             }
         }
     }
-    loginUser = async (req) => {
-        try{
-            const User = await prisma.user.findUnique({
-                where: {
-                    username: req.username,
-                },
-            })
-            if(bcrypt.compareSync(req.password, User.password)){
-                return{
-                    status:false,
-                    code:404,
-                    message: "Password yang anda masukkan salah"
-                }
-            }
-            // console.log (password)
-            const user = await prisma.authUsers.findFirst({
-                where: {
-                    userId: User.id,
-                    roleId:4
-                },
-                select:{
-                    users:{
-                        select:{
-                            username:true,
-                            password:true
-                        }
-                    },
-                    roles:{
-                        select:{
-                            name:true
-                        }
-                    }
-                }
-            })
-            const {users, roles} = user
-            const data = {
-                "username": users.username,
-                "password":users.password,
-                "roles":roles.name
-            }
-            // console.log(data)
-            return {
-                status: 200,
-                data: data
-            }
-        }
-        catch(error){
-            console.error('loginUser user module Error:', error);
-            return {
-                status: false,
-                code: 404,
-                error
-            }
-        }
-
-    }
-
 }
 
 module.exports = new _user

@@ -9,10 +9,4 @@ userController.post('/addData', async(req, res)=>{
     const data = await m$user.addUser(req.body)
     response.sendResponse(data, res)
 })
-//url endpoint "http://localhost:8000/api/users/login"
-userController.post('/login', async (req, res)=>{
-    const data = await m$user.loginUser(req.body)
-    response.sendResponse(data, res)
-})
-
 module.exports = userController

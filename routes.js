@@ -1,9 +1,11 @@
 const userController = require("./controllers/userController")
 const adminController = require("./controllers/adminController")
+const authController = require('./controllers/authController')
 // const routes = (app)=>{
 //     app.use('/api', userController)
 // }
 const _routes=[
+    ['', authController],
     ['users', userController],
     ['admin', adminController]
 ]
