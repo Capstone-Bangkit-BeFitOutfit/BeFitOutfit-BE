@@ -9,4 +9,9 @@ userController.post('/addData', async(req, res)=>{
     const data = await m$user.addUser(req.body)
     response.sendResponse(data, res)
 })
+//url endpoint "http://localhost:8000/api/users/updateUser"
+userController.post('/updateUser', async(req, res)=>{
+    const data = await m$user.updateUser(req.body)
+    response.sendResponse(data, res)
+})
 module.exports = userController

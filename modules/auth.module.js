@@ -4,8 +4,6 @@ const prisma = require('../helpers/database')
 class _auth{
     loginUser = async (body) => {
         try{
-            console.log(body.username)
-            console.log(body.password)
             const schema = Joi.object({
                 username:Joi.string().required(),
                 password:Joi.string().required()
