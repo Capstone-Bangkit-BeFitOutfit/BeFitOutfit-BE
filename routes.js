@@ -12,7 +12,7 @@ const _routes=[
 const routes= (app)=>{
     _routes.forEach((route)=>{
         const [url, controller] = route
-        app.use(`${url}`, controller)
+        app.use(`/${url}`, controller)
     })
 }
 module.exports=routes

@@ -34,8 +34,7 @@ class _user {
                     }
                 }
             })
-            const authUserId = getUser.AuthUsers[0].id
-            console.log(getUser)
+            // console.log(getUser)
             if(!bcrypt.compareSync(body.password, getUser.password)){
                 return{
                     status:false,
@@ -43,6 +42,7 @@ class _user {
                     message: "User account not found"
                 }
             }
+            const authUserId = getUser.AuthUsers[0].id
             const editUser = await prisma.authUsers.update({
                 where:{id:authUserId},
                 data:{roleId:body.roleId}

@@ -1,6 +1,7 @@
 const { Router } = require('express')
-const m$user = require('../modules/user.module')
+const m$user = require('../modules/user.module.js')
 const response = require('../helpers/response')
+const middleware =require('../helpers/midleware')
 // const db = require("../config/mysql")
 const userController = Router()
 
@@ -9,8 +10,8 @@ userController.post('/addData', async(req, res)=>{
     const data = await m$user.addUser(req.body)
     response.sendResponse(data, res)
 })
-//url endpoint "http://localhost:8000/api/users/updateUser"
-userController.post('/updateUser', async(req, res)=>{
+//url endpoint "http://localhost:8000/users/updateUser"
+userController.post('/updateUser',middleware, async(req, res)=>{
     const data = await m$user.updateUser(req.body)
     response.sendResponse(data, res)
 })

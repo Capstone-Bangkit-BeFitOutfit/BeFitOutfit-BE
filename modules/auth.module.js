@@ -107,20 +107,30 @@ class _auth{
                             username:true,
                             email:true
                         }
+                    },
+                    roles:{
+                        select:{
+                            name:true
+                        }
                     }
                 }
             })
-            const {users} = user
+            const {users, roles} = user
             const data = {
                 username: users.username,
                 email:users.email,
+                roles:roles.name
             }
-            // const token = jwt.sign(data, 'secret-code-token',{expiresIn:"1h"})
-            // console.log(data)
+            const token = jwt.sign(data, 'secret-code-token',{expiresIn:"1h"})
+            console.log(token)
             return {
                 status: 200,
                 message:"success",
-                data: data
+                data:{
+                    "username":data.username,
+                    "email" : data.email,
+                    "token":token
+                }
             }
         }
         catch(error){
