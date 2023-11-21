@@ -1,37 +1,42 @@
 const { PrismaClient } = require('@prisma/client')
+const { user } = require('./helpers/database')
 
 const prisma = new PrismaClient()
-
-// ... you will write your Prisma Client queries here
 async function main() {
-  await prisma.user.create({
-    data: {
-      username: "user2",
-      password: "user2",
-      AuthUsers: {
-        create: {
-          roleId: 4
-        }
-      }
-    }
-  });
+    // await prisma.role.create({
+    //   data:{
+    //     name:"admin",
+    //   }
+    // })
 
 
+    // await prisma.role.update({
+    //     where:{id:2},
+    //     data:{
+    //       name:"user",
+    //     }
+    //   })
 
-  // await prisma.role.create({
-  //   data:{
-  //     name:"user",
-  //   }
-  // })
 
-  const allUsers = await prisma.user.findMany({
-    where: {
-      username: "root"
-    }
-  })
-  console.dir(allUsers, { depth: null })
+    // const getRole = await prisma.role.findFirst({
+    //     where:{name:"user"},
+    //     select:{
+    //         id:true
+    //     }
+    // })
+    // console.log(getRole.id)
+
+    const User = await prisma.user.findUnique({
+        where: {email: "test@example.id"}
+    })
+    console.log(User)
+    // const allUsers = await prisma.role.findMany({
+    //     where: {
+    //       name: "user"
+    //     }
+    //   })
+    //   console.dir(allUsers, { depth: null })
 }
-
 main()
   .then(async () => {
     await prisma.$disconnect()

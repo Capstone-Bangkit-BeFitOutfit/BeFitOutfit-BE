@@ -1,76 +1,136 @@
 const Joi=require('joi')
 const bcrypt = require('bcrypt')
 const prisma = require('../helpers/database')
+const jwt = require('jsonwebtoken')
 class _auth{
-    loginUser = async (body) => {
-        try{
+    register = async (req) => {
+        try {
             const schema = Joi.object({
                 username:Joi.string().required(),
-                password:Joi.string().required()
+                email:Joi.string().required(),
+                password:Joi.string().required(),
             }).options({abortEarly: false})
-            const validation = schema.validate(body)
-            if (validation.error) {
-                const errorDetails = validation.error.details.map(detail => detail.message)
-
-                return {
+            const validation = schema.validate(req)
+            if(validation.error){
+                const errorDetails = validation.error.details.map(detail=>{
+                    detail.message
+                })
+                return{
                     status: false,
-                    code: 422,
+                    code:422,
                     error: errorDetails.join(', ')
                 }
             }
-            const User = await prisma.user.findUnique({
-                where: {
-                    username: body.username,
-                },
-            })
-            if(bcrypt.compareSync(body.password, User.password)){
-                return{
-                    status:false,
-                    code:404,
-                    message: "Password yang anda masukkan salah"
-                }
-            }
-            // console.log (password)
-            const user = await prisma.authUsers.findFirst({
-                where: {
-                    userId: User.id,
-                    roleId:4
-                },
+            const password = bcrypt.hashSync(req.password, 15)
+            const getRole = await prisma.role.findFirst({
+                where:{name:"user"},
                 select:{
-                    users:{
-                        select:{
-                            username:true,
-                            password:true
-                        }
-                    },
-                    roles:{
-                        select:{
-                            name:true
+                    id:true
+                }
+            })
+            await prisma.user.create({
+                data: {
+                    username: req.username,
+                    email: req.email,
+                    password: password,
+                    AuthUsers: {
+                        create: {
+                            roleId: getRole.id
                         }
                     }
                 }
-            })
-            const {users, roles} = user
-            const data = {
-                "username": users.username,
-                "password":users.password,
-                "roles":roles.name
-            }
-            // console.log(data)
+            });
             return {
-                status: 200,
-                data: data
-            }
-        }
-        catch(error){
-            console.error('loginUser user module Error:', error);
+                status: true,
+                code: 201,
+                message:"created"
+            };
+        } catch (error) {
+            console.error('Register error auth module Error:', error);
             return {
                 status: false,
                 code: 404,
                 error
             }
         }
+    }
 
+    login = async (body) => {
+        try{
+            const schema = Joi.object({
+                email:Joi.string().required(),
+                password:Joi.string().required()
+            }).options({abortEarly: false})
+            const validation = schema.validate(body)
+            if (validation.error) {
+                const errorDetails = validation.error.details.map(detail => detail.message)
+                return {
+                    status: false,
+                    code: 422,
+                    error: errorDetails.join(', ')
+                }
+            }
+            const getUser = await prisma.user.findUnique({
+                where: {email: body.email}
+            })
+            // console.log(getUser)
+            if (!getUser) {
+                return {
+                    status: false,
+                    code: 404,
+                    error: 'User not found'
+                }
+            }
+            if(!bcrypt.compareSync(body.password, getUser.password)){
+                return{
+                    status:false,
+                    code:404,
+                    message: "Password wrong, please fill with the correct password"
+                }
+            }
+            // console.log (password)
+            const getRole = await prisma.role.findFirst({
+                where:{name:"user"},
+                select:{
+                    id:true
+                }
+            })
+
+            const user = await prisma.authUsers.findFirst({
+                where: {
+                    userId: getUser.id,
+                    roleId:getRole.id
+                },
+                select:{
+                    users:{
+                        select:{
+                            username:true,
+                            email:true
+                        }
+                    }
+                }
+            })
+            const {users} = user
+            const data = {
+                username: users.username,
+                email:users.email,
+            }
+            // const token = jwt.sign(data, 'secret-code-token',{expiresIn:"1h"})
+            // console.log(data)
+            return {
+                status: 200,
+                message:"success",
+                data: data
+            }
+        }
+        catch(error){
+            console.error('login auth module Error:', error);
+            return {
+                status: false,
+                code: 404,
+                error
+            }
+        }
     }
 }
 
