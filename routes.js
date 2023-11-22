@@ -1,12 +1,14 @@
-const userController = require("./controllers/userController")
-const adminController = require("./controllers/adminController")
 const authController = require('./controllers/authController')
+const userController = require("./controllers/userController")
+const postImagesController = require('./controllers/postImagesController')
+const adminController = require("./controllers/adminController")
 // const routes = (app)=>{
 //     app.use('/api', userController)
 // }
 const _routes=[
     ['', authController],
     ['users', userController],
+    ['postImages', postImagesController],
     ['admin', adminController]
 ]
 const routes= (app)=>{
