@@ -1,6 +1,5 @@
 const {Router} = require('express')
 const m$storage = require('../helpers/storage')
-const response=require('../helpers/response')
 const multer = require('multer')
 const storageController = Router()
 const filterFile = (req, file, cb) => {
@@ -16,8 +15,7 @@ const filterFile = (req, file, cb) => {
 }
 const handleFile = multer({storage:multer.memoryStorage(),fileFilter:filterFile})
 
-storageController.post("/uploadFile", handleFile.any(), async(req, res)=>{
-    const data = await m$storage.uploadToGcs(req)
-    response.sendResponse(data, res);
+storageController.post("/uploadFile", handleFile.single('file'),m$storage.uploadToGcs, async(req, res)=>{
+    console.log(req.file.originalname)
 })
 module.exports=storageController
