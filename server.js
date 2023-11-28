@@ -2,7 +2,6 @@ const express = require('express')
 const cors = require('cors');
 const routes = require('./routes');
 const morgan = require('morgan');
-const db = require('./config/mysql')
 // const userController = require('./userController')
 const app = express();
 const port = 8000;

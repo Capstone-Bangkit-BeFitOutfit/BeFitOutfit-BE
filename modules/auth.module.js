@@ -122,7 +122,7 @@ class _auth{
                 roles:roles.name
             }
             const token = jwt.sign(data, 'secret-code-token',{expiresIn:"1h"})
-            console.log(token)
+            // console.log(token)
             return {
                 status: 200,
                 message:"success",
