@@ -5,7 +5,7 @@ const middleware =require('../helpers/midleware')
 // const db = require("../config/mysql")
 const userController = Router()
 
-//url endpoint "http://localhost:8000/api/users/userData"
+//url endpoint "http://localhost:8000/users/userData"
 userController.post('/addData', async(req, res)=>{
     const data = await m$user.addUser(req.body)
     response.sendResponse(data, res)

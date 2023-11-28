@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "befitoutfit",
+  "private_key_id": "7bfe6606f1fe39cbb09c4fea0a791a6e10c68b9a",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDFap1SLjgvQxYZ\nkV/Pbp3s/vhz7oICeNrg3c88AGf7CDONTDFmtUqFfw/Ym61cFrPzkpyIkKfmcFgy\nZV6PfiKrVNrFTa2g/Ov3Sbl2vFqkfLoQMSAUqG41Hj5Kr67lkt06aE9vMDTosOD+\ni2ypIikO8a0zPooyoC3CVOOVt/1Do5xlkciUB5NnygJaVC6Wf1tT/mzcT/bwFB4p\n9Wii0rEMLPd6+xnQ9Tt7Osw/VvjwnJ9H5w9vywW3XQiQgIKVft3p04wOJKjkjVED\nuRxxXnOPqhhPDv23WDikErq4jINVwvOJkn5U6W/K+5RzYTGnhWb7tUMkchyACfPP\npXZi+0k1AgMBAAECggEAMOH4IA4FSACk04JpdrfVf4ZX937mrt2FlxodUyZnmON8\nPl/QOLYpxHoErrZHnC6b8vNJ8s/c30TQtfPfUQki5Qk/HY1hMaSG+kXFWHcFu8aN\nnO5JGwxks57wPjaXyE1QHcMP7kCBzV9k6uqTpqKoh4SExlRVTHlYs06pRtyW5/0G\nT6Bo7ap5o4XNGmPeJzOtdsU5pwGExG+3EIZEp+XTG9w1hQnAYjVOBEMl8pKG0xZD\nuuf3koa9cUgM98OoD2+3orXFSPHFfnD3o5Bx6tyNEaIUZKTmUYd622OsEg8yexR2\nG7Ddj5zcwd2j5Ishy4XX4f+NVt6tQP0oOblVH8IvwQKBgQD+fxm9D0KOYv60OLzB\ny7uraFLsfaX+PneUJM+GteEFJ5ZjXSOTXm5KWp6zyI4gAh6K/Glspy7ZP8DVd5ia\nDOhxsg6sW717MFtaqP+y9+KSGztJGfiGcYFVZhK/geIPEf2FE3v8wV6lxFvxZdRI\nRRLcGWvlLF7RYQpbnpT+gXhpQQKBgQDGlS+3t+AtGah7nN2AtRt9nxPAMY8rKgKN\nEaIITfqmymRZ+OY/tPtuoL1AktNpIhezE3UL5kRUIFkvfdfXAWxSJGX0/ITmg4pU\nxx+5VTl7oRlDP36z6Cf5qkQv5FlqQTlx8fwYFhXN8EN0+E7zwyodb7bpDvYaXEqX\nbq+uML0O9QKBgExOS6dWJfyPThM3V9E7ht+T/hkOa3DZxfzTNK4NZpSnE/5i9MHA\n9IyysxbwsTyDpijCGdIMJo3ZAbZ/j2/RIvjEDIY9U4jWLO338gL1NCfepl36vXuC\nGOdEHabyCJfAKyV1fB2C1SAayf6NK6Mnosn/jUw/i4Z39CUYXVAZ/cKBAoGAcnSY\nHS6o0bXBKwX9kOpRnvTqAFNQLlO3RrGMD3dKaYmrj0PrCXr5lAinK6m0mhrhSACF\n7MbaSRaf8MR6e9zBHxMFhM9qliXou/ZM7ZgWWpA+rEjTcUP0jmy5glT9yEUxo+AS\nKZvJE3pQlwFrGAo7ot25sdhCtmzNPTy5mw9SWGUCgYEAydhaz+qSVwJTwUKIrmrm\n5WCUx2HBih+Sz2+D2MygSHSQHK6Fx3KR2BurIGS+wwuD6Z122ywCHKrmI95hnM7x\nsomY3pdE/PFiz9rmDWqu2U3doxgm6zkdWblWOjobFmEU1bggUeFtzMaXZWA7gDF+\nGWbldrIpIVNfcdPwV2QQX3Y=\n-----END PRIVATE KEY-----\n",
+  "client_email": "befitoutfitstorage@befitoutfit.iam.gserviceaccount.com",
+  "client_id": "117538790117962778188",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/befitoutfitstorage%40befitoutfit.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
