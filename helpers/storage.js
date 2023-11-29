@@ -11,7 +11,7 @@ class _storage {
             const publicUrl = (filename)=>{
                 return 'https://storage.googleapis.com/befitoutfit/images/' + filename
             }
-            const gcsname = req.file.originalname
+            const gcsname = `${Date.now()}-${req.file.originalname}`
             const file = bucket.file(`images/${gcsname}`)
             const stream = file.createWriteStream({
                 metadata: {

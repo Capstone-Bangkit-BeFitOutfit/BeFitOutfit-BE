@@ -12,13 +12,5 @@ const filterFile = (req, file, cb) => {
     }
 }
 
-const multerDiskStorage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, './assets')
-    },
-    filename: function (req, file, cb) {
-        cb(null, `${Date.now()}-${file.originalname}`)
-    }
-})
-const uploadFoto = multer({ storage: multerDiskStorage, fileFilter: filterFile })
+const uploadFoto = multer({ storage: multer.memoryStorage(), fileFilter: filterFile })
 module.exports = uploadFoto

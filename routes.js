@@ -3,6 +3,7 @@ const userController = require("./controllers/userController")
 const postImagesController = require('./controllers/postImagesController')
 const adminController = require("./controllers/adminController")
 const storageController = require('./controllers/storageController')
+const outfitController = require('./controllers/outfitController')
 // const routes = (app)=>{
 //     app.use('/api', userController)
 // }
@@ -11,7 +12,8 @@ const _routes=[
     ['users', userController],
     ['postImages', postImagesController],
     ['admin', adminController],
-    ['storage', storageController]
+    ['storage', storageController],
+    ['outfit', outfitController]
 ]
 const routes= (app)=>{
     _routes.forEach((route)=>{
