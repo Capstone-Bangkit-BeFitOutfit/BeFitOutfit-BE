@@ -66,14 +66,14 @@ class _outfit {
                     })
                 
                 return {
-                    code: 200,
-                    message: "success"
+                    code: 201,
+                    message: "created"
                 }
             }
             else {
                 return {
-                    message: "failed",
-                    error: "Module outfit error in get PublicURL"
+                    code: 400,
+                    message: "failed - bad request",
                 }
             }
         } catch (error) {
