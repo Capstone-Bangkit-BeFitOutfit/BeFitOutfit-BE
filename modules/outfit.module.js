@@ -84,5 +84,90 @@ class _outfit {
             }
         }
     }
+    updateOutfit=async (req)=>{
+        try{
+            const idOutfit = Number(req.params.id)
+            let includeValue = req.body.include
+            if(includeValue==="false"){
+                includeValue===0
+            }
+            if(includeValue==="true"){
+                includeValue===1
+            }
+            const schema = Joi.object({
+                id:Joi.number().required(),
+                name:Joi.string(),
+                type:Joi.string(),
+                include:Joi.boolean()
+            })
+            const validation = schema.validate({
+                id:idOutfit,
+                name:req.body.name,
+                type:req.body.type,
+                include:Boolean(includeValue)
+            })
+            if(validation.error){
+                const errorDetails = validation.error.details.map(detail => {
+                    detail.message
+                })
+                return {
+                    status: false,
+                    code: 422,
+                    error: errorDetails.join(', ')
+                }
+            }
+            const token = req.headers.authorization.split(' ')[1]
+                const decoded = jwt.verify(token, 'secret-code-token')
+                const user = await prisma.user.findUnique({
+                    where: { email: decoded.email },
+                    select: {
+                        id: true,
+                    }
+                })
+                if(req.body.name){
+                    await prisma.outfit.update({
+                        where:{
+                            id:idOutfit,
+                            userId:user.id
+                        },
+                        data:{
+                            nama:req.body.name
+                        }
+                    })
+                }
+                if(req.body.include){
+                    await prisma.outfit.update({
+                        where:{
+                            id:idOutfit,
+                            userId:user.id
+                        },
+                        data:{
+                            include:Boolean(includeValue)
+                        }
+                    })
+                }
+                if(req.body.type){
+                    await prisma.outfit.update({
+                        where:{
+                            id:idOutfit,
+                            userId:user.id
+                        },
+                        data:{
+                            type:req.body.type
+                        }
+                    })
+                }
+            return{
+                code:200,
+                message: "success"
+            }
+        }catch(err){
+            console.error('Error, ' + err)
+            return{
+                code:500,
+                message: "Internal server error outfit module"
+            }
+        }
+    }
 }
 module.exports = new _outfit()

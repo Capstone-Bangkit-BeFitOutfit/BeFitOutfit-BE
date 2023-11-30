@@ -4,7 +4,7 @@ const routes = require('./routes');
 const morgan = require('morgan');
 // const userController = require('./userController')
 const app = express();
-const port = 8000;
+const port = process.env.PORT;
 
 app.use(cors());
 app.use(morgan("dev"))
@@ -13,7 +13,7 @@ app.use(express.urlencoded({extended:true}))
 
 app.get('/', async (req, res) => {
     res.status(200).json({
-        message: 'Welcome to Backend SI DCS'
+        message: 'Welcome to BeFitOutfit'
     })
 })
 // app.use('/login', userController)
