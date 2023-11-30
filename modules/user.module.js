@@ -2,63 +2,66 @@ const Joi = require('joi');
 const prisma = require('../helpers/database')
 const bcrypt = require('bcrypt')
 class _user {
-    updateUser = async(body)=>{
-        try{
+    updateUser = async (userId, body) => {
+        try {
             const schema = Joi.object({
-                username:Joi.string().required(),
-                password:Joi.string().required(),
-                roleId:Joi.number().required()
-            }).options({abortEarly: false})
+                username: Joi.string().required(),
+                email: Joi.string().required(),
+                password: Joi.string().required(),
+            }).options({ abortEarly: false })
+
             const validation = schema.validate(body)
-            if(validation.error){
-                const errorDetails = validation.error.details.map(detail=>{
+
+            //bad request
+            if (validation.error) {
+                const errorDetails = validation.error.details.map(detail => {
                     detail.message
                 })
-                return{
+
+                return {
                     status: false,
-                    code:422,
+                    code: 400,
                     error: errorDetails.join(', ')
                 }
             }
             const getUser = await prisma.user.findUnique({
-                where:{
+                where: {
                     username: body.username
                 },
-                select:{
+                select: {
                     username: true,
+                    email: true,
                     password: true,
-                    AuthUsers:{
-                        select:{
-                            id:true
-                        }
-                    }
                 }
             })
+
             // console.log(getUser)
-            if(!bcrypt.compareSync(body.password, getUser.password)){
-                return{
-                    status:false,
-                    code:404,
+            if (!bcrypt.compareSync(body.password, getUser.password)) {
+                return {
+                    status: false,
+                    code: 404, //user not found
                     message: "User account not found"
                 }
             }
-            const authUserId = getUser.AuthUsers[0].id
-            const editUser = await prisma.authUsers.update({
-                where:{id:authUserId},
-                data:{roleId:body.roleId}
+            
+            await prisma.user.update({
+                where: { id: userId },
+                data: { username: body.username,
+                        email: body.email 
+                }
             })
-            return{
-                status:true,
-                code:201,
-                message:"Update success",
-                data:editUser
+            return {
+                status: true,
+                code: 201, //created
+                message: "Update succes",
             }
         }
-        catch(error){
+
+        catch (error) {
             console.error('updateUser user module Error:', error);
-            return{
+            return {
                 status: false,
-                code:404,
+                code: 500, //bad gateway
                 error
             }
         }

@@ -12,7 +12,6 @@ const middleware = async (req, res, next) => {
                     id: true,
                 }
             })
-            console.log(decoded)
             const authRole = await prisma.authUsers.findFirst({
                 where: { userId: user.id }
             })
