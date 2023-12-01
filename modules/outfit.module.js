@@ -2,15 +2,15 @@ const prisma = require('../helpers/database')
 const jwt = require('jsonwebtoken')
 const Joi = require('joi')
 class _outfit {
-    addOutfit = async (req) => {
+    addOutfit = async (req, res, next) => {
         try {
             if (req.file && req.file.cloudStoragePublicUrl) {
                 const imgUrl = req.file.cloudStoragePublicUrl
                 let includeValue = req.body.include
-                if (includeValue === "false"){
-                    includeValue=0
-                }else if(includeValue === "true"){
-                    includeValue=1
+                if (includeValue === "false") {
+                    includeValue = 0
+                } else if (includeValue === "true") {
+                    includeValue = 1
                 }
                 const schema = Joi.object({
                     name: Joi.string().required(),
@@ -21,7 +21,7 @@ class _outfit {
                     }),
                     percentage: Joi.number().required(),
                     type: Joi.string().required(),
-                    include:Joi.boolean().required()
+                    include: Joi.boolean().required()
                 }).options({ abortEarly: false })
                 const validation = schema.validate({
                     name: req.body.name,
@@ -32,16 +32,16 @@ class _outfit {
                     },
                     percentage: Number(req.body.percentage),
                     type: req.body.type,
-                    include:Boolean(includeValue)
+                    include: Boolean(includeValue)
                 })
                 if (validation.error) {
-                    const errorDetails = validation.error.details.map(detail => {
+                    const errorDetails = validation.error.details.map(detail =>
                         detail.message
-                    })
+                    )
                     return {
                         status: false,
                         code: 422,
-                        error: errorDetails.join(', ')
+                        message: errorDetails
                     }
                 }
                 const token = req.headers.authorization.split(' ')[1]
@@ -53,18 +53,18 @@ class _outfit {
                     }
                 })
 
-                    await prisma.outfit.create({
-                        data:{
-                            userId:user.id,
-                            nama:req.body.name,
-                            event:req.body.event,
-                            photo:imgUrl,
-                            percentage:Number(req.body.percentage),
-                            type:req.body.type,
-                            include:Boolean(includeValue)
-                        }
-                    })
-                
+                await prisma.outfit.create({
+                    data: {
+                        userId: user.id,
+                        nama: req.body.name,
+                        event: req.body.event,
+                        photo: imgUrl,
+                        percentage: Number(req.body.percentage),
+                        type: req.body.type,
+                        include: Boolean(includeValue)
+                    }
+                })
+
                 return {
                     code: 201,
                     message: "created"
@@ -78,38 +78,38 @@ class _outfit {
             }
         } catch (error) {
             console.error(Error, error)
-            return{
-                code:500,
+            return {
+                code: 500,
                 message: "Internal Error, " + error
             }
         }
     }
-    updateOutfit=async (req)=>{
-        try{
+    updateOutfit = async (req) => {
+        try {
             const idOutfit = Number(req.params.id)
             let includeValue = req.body.include
-            if(includeValue==="false"){
-                includeValue===0
+            if (includeValue === "false") {
+                includeValue === 0
             }
-            if(includeValue==="true"){
-                includeValue===1
+            if (includeValue === "true") {
+                includeValue === 1
             }
             const schema = Joi.object({
-                id:Joi.number().required(),
-                name:Joi.string(),
-                type:Joi.string(),
-                include:Joi.boolean()
+                id: Joi.number().required(),
+                name: Joi.string(),
+                type: Joi.string(),
+                include: Joi.boolean()
             })
             const validation = schema.validate({
-                id:idOutfit,
-                name:req.body.name,
-                type:req.body.type,
-                include:Boolean(includeValue)
+                id: idOutfit,
+                name: req.body.name,
+                type: req.body.type,
+                include: Boolean(includeValue)
             })
-            if(validation.error){
-                const errorDetails = validation.error.details.map(detail => {
+            if (validation.error) {
+                const errorDetails = validation.error.details.map(detail =>
                     detail.message
-                })
+                )
                 return {
                     status: false,
                     code: 422,
@@ -117,54 +117,67 @@ class _outfit {
                 }
             }
             const token = req.headers.authorization.split(' ')[1]
-                const decoded = jwt.verify(token, 'secret-code-token')
-                const user = await prisma.user.findUnique({
-                    where: { email: decoded.email },
-                    select: {
-                        id: true,
+            const decoded = jwt.verify(token, 'secret-code-token')
+            const user = await prisma.user.findUnique({
+                where: { email: decoded.email },
+                select: {
+                    id: true,
+                }
+            })
+            const validateIdOutfit = await prisma.outfit.findUnique({
+                where: {
+                    id: idOutfit,
+                    userId: user.id
+                }
+            })
+            console.log(validateIdOutfit)
+            if (validateIdOutfit === null) {
+                return {
+                    code: 404,
+                    message: "No oufit"
+                }
+            }
+            if (req.body.name) {
+                await prisma.outfit.update({
+                    where: {
+                        id: idOutfit,
+                        userId: user.id
+                    },
+                    data: {
+                        nama: req.body.name
                     }
                 })
-                if(req.body.name){
-                    await prisma.outfit.update({
-                        where:{
-                            id:idOutfit,
-                            userId:user.id
-                        },
-                        data:{
-                            nama:req.body.name
-                        }
-                    })
-                }
-                if(req.body.include){
-                    await prisma.outfit.update({
-                        where:{
-                            id:idOutfit,
-                            userId:user.id
-                        },
-                        data:{
-                            include:Boolean(includeValue)
-                        }
-                    })
-                }
-                if(req.body.type){
-                    await prisma.outfit.update({
-                        where:{
-                            id:idOutfit,
-                            userId:user.id
-                        },
-                        data:{
-                            type:req.body.type
-                        }
-                    })
-                }
-            return{
-                code:200,
+            }
+            if (req.body.include) {
+                await prisma.outfit.update({
+                    where: {
+                        id: idOutfit,
+                        userId: user.id
+                    },
+                    data: {
+                        include: Boolean(includeValue)
+                    }
+                })
+            }
+            if (req.body.type) {
+                await prisma.outfit.update({
+                    where: {
+                        id: idOutfit,
+                        userId: user.id
+                    },
+                    data: {
+                        type: req.body.type
+                    }
+                })
+            }
+            return {
+                code: 200,
                 message: "success"
             }
-        }catch(err){
+        } catch (err) {
             console.error('Error, ' + err)
-            return{
-                code:500,
+            return {
+                code: 500,
                 message: "Internal server error outfit module"
             }
         }

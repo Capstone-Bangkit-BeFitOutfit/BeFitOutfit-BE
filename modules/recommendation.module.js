@@ -29,10 +29,17 @@ class _recommendation {
             }
             const user = await prisma.user.findUnique({
                 where: { email: req.query.email },
-                select: {
-                    id: true,
-                }
+                select: {id: true,}
             })
+            if(user === null){
+                return{code:404,message:"No email match"}
+            }
+            const validateEvent = await prisma.outfit.findFirst({
+                where:{userId:user.id, event:req.query.event}
+            })
+            if(validateEvent === null){
+                return{code:404,message:"Not event match"}
+            }
             const findTop = await prisma.outfit.findMany({
                 where:{
                     userId:user.id,

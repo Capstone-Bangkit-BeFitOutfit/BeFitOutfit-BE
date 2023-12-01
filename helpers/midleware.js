@@ -2,10 +2,15 @@ const prisma = require('./database');
 const jwt = require('jsonwebtoken')
 const middleware = async (req, res, next) => {
     let token
-    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')){
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
         try {
             token = req.headers.authorization.split(' ')[1]
             const decoded = jwt.verify(token, 'secret-code-token')
+            const currentTime = Math.floor(Date.now() / 1000);
+            if (decoded.exp && decoded.exp <= currentTime) {
+                return res.status(401).send({ message: 'Unauthorized - Token has expired' });
+            }
+            console.log(decoded.exp+" "+currentTime)
             const user = await prisma.user.findUnique({
                 where: { email: decoded.email },
                 select: {
@@ -28,6 +33,11 @@ const middleware = async (req, res, next) => {
                 })
             }
         } catch (error) {
+            const process=String(error)
+            const textError = process.split(': ')
+            if(textError[0]==="TokenExpiredError"){
+                return res.status(404).send({message: "Token has timed out!"})
+            }
             console.error('Midleware Error:', error);
             return {
                 status: false,
@@ -36,10 +46,10 @@ const middleware = async (req, res, next) => {
             }
         }
     }
-    if(!token){
+    if (!token) {
         res.status(401).send({
-            status:false,
-            error:"No Authorize no token"
+            status: false,
+            error: "No Authorize no token"
         })
     }
 }
