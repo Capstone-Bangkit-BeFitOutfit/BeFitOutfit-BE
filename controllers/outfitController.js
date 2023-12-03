@@ -11,5 +11,11 @@ outfitController.post('/add', middleware,uploadFoto.single('photo'), m$storage.u
     response.sendResponse(data, res)
 })
 
+outfitController.get('', middleware, async(req, res)=>{
+    // console.log(req.file)
+    const data = await m$outfit.getOutfit(req)
+    response.sendResponse(data, res)
+})
+
 
 module.exports=outfitController

@@ -7,10 +7,10 @@ class _outfit {
             if (req.file && req.file.cloudStoragePublicUrl) {
                 const imgUrl = req.file.cloudStoragePublicUrl
                 let includeValue = req.body.include
-                if (includeValue === "false"){
-                    includeValue=0
-                }else if(includeValue === "true"){
-                    includeValue=1
+                if (includeValue === "false") {
+                    includeValue = 0
+                } else if (includeValue === "true") {
+                    includeValue = 1
                 }
                 const schema = Joi.object({
                     name: Joi.string().required(),
@@ -21,7 +21,7 @@ class _outfit {
                     }),
                     percentage: Joi.number().required(),
                     type: Joi.string().required(),
-                    include:Joi.boolean().required()
+                    include: Joi.boolean().required()
                 }).options({ abortEarly: false })
                 const validation = schema.validate({
                     name: req.body.name,
@@ -32,7 +32,7 @@ class _outfit {
                     },
                     percentage: Number(req.body.percentage),
                     type: req.body.type,
-                    include:Boolean(includeValue)
+                    include: Boolean(includeValue)
                 })
                 if (validation.error) {
                     const errorDetails = validation.error.details.map(detail => {
@@ -53,18 +53,18 @@ class _outfit {
                     }
                 })
 
-                    await prisma.outfit.create({
-                        data:{
-                            userId:user.id,
-                            nama:req.body.name,
-                            event:req.body.event,
-                            photo:imgUrl,
-                            percentage:Number(req.body.percentage),
-                            type:req.body.type,
-                            include:Boolean(includeValue)
-                        }
-                    })
-                
+                await prisma.outfit.create({
+                    data: {
+                        userId: user.id,
+                        nama: req.body.name,
+                        event: req.body.event,
+                        photo: imgUrl,
+                        percentage: Number(req.body.percentage),
+                        type: req.body.type,
+                        include: Boolean(includeValue)
+                    }
+                })
+
                 return {
                     code: 201,
                     message: "created"
@@ -78,11 +78,67 @@ class _outfit {
             }
         } catch (error) {
             console.error(Error, error)
-            return{
-                code:500,
+            return {
+                code: 500,
                 message: "Internal Error, " + error
             }
         }
     }
+
+    //GET OUTFIT
+    getOutfit = async (req) => {
+        try {
+            const token = req.headers.authorization.split(' ')[1]
+            const decoded = jwt.verify(token, 'secret-code-token')
+            const user = await prisma.user.findUnique({
+                where: { email: decoded.email },
+                select: {
+                    id: true,
+                }
+            })
+
+            // Bad request
+            if (!user) {
+                return {
+                    status: false,
+                    code: 400,
+                    message: 'Bad Request - User not found',
+                };
+            }
+
+
+
+            // Retrieve outfits for the user
+            const outfits = await prisma.outfit.findMany({
+                where: { userId: user.id },
+                select: {
+                    id: true,
+                    nama: true, // Assuming nama is the name field in the outfit model
+                    type: true,
+                    photo: true, // Assuming photo is the imageUrl field in the outfit model
+                },
+            })
+
+            const listOutfits = outfits.map((outfit) => ({
+                id: outfit.id,
+                name: outfit.nama, // Adjust as needed
+                type: outfit.type,
+                imageUrl: outfit.photo, // Adjust as needed
+            }));
+
+            return {
+                status: true,
+                code: 200,
+                data: listOutfits,
+            };
+        } catch (error) {
+            console.error(Error, error);
+            return {
+                code: 500,
+                message: "Internal Error, " + error,
+            };
+        }
+    };
 }
-module.exports = new _outfit()
+
+module.exports = new _outfit();

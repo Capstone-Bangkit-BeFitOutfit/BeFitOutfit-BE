@@ -12,6 +12,15 @@ const middleware = async (req, res, next) => {
                     id: true,
                 }
             })
+
+            if (!user) {
+                return {
+                    status: false,
+                    code: 400,
+                    message: 'Bad Request - User not found',
+                };
+            }
+
             const authRole = await prisma.authUsers.findFirst({
                 where: { userId: user.id }
             })

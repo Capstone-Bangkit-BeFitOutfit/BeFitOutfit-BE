@@ -7,7 +7,7 @@ const recommendationController = require('./controllers/recommendationController
 // }
 const _routes=[
     ['', authController],
-    ['users', userController],
+    ['user', userController],
     ['outfit', outfitController],
     ['recommend', recommendationController]
 ]

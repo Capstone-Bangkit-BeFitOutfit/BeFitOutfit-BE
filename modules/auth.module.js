@@ -98,7 +98,7 @@ class _auth{
             const user = await prisma.authUsers.findFirst({
                 where: {
                     userId: getUser.id,
-                    roleId:getRole.id
+                    roleId: getRole.id
                 },
                 select:{
                     users:{
