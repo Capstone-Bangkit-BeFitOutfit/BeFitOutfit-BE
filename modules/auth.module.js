@@ -73,7 +73,6 @@ class _auth{
             const getUser = await prisma.user.findUnique({
                 where: {email: body.email}
             })
-            // console.log(getUser)
             if (!getUser) {
                 return {
                     status: false,
