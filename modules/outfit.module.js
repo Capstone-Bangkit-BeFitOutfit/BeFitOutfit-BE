@@ -2,7 +2,76 @@ const prisma = require('../helpers/database')
 const jwt = require('jsonwebtoken')
 const Joi = require('joi')
 class _outfit {
-    addOutfit = async (req) => {
+
+    //GET OUTFIT
+    getOutfit = async (req) => {
+        try {
+            const token = req.headers.authorization.split(' ')[1]
+
+            // periksa token
+            if (!token) {
+                return {
+                    status: false,
+                    code: 400,
+                    message: 'Bad Request - Token is missing',
+                };
+            }
+            console.log('Received Token:', token);
+            const decoded = jwt.verify(token, 'secret-code-token')
+            const user = await prisma.user.findUnique({
+                where: { email: decoded.email },
+                select: {
+                    id: true,
+                }
+            })
+
+            // Bad request
+            if (!user) {
+                return {
+                    status: false,
+                    code: 400,
+                    message: 'Bad Request - User not found',
+                };
+            }
+            // Retrieve outfits for the user
+            const outfits = await prisma.outfit.findMany({
+                where: { userId: user.id },
+                select: {
+                    id: true,
+                    nama: true, 
+                    type: true,
+                    photo: true, 
+                },
+            })
+            const listOutfits = outfits.map((outfit) => ({
+                id: outfit.id,
+                name: outfit.nama, 
+                type: outfit.type,
+                imageUrl: outfit.photo, 
+            }));
+            return {
+                status: true,
+                code: 200,
+                data: listOutfits,
+            };
+        } catch (error) {
+            if (error.name === 'JsonWebTokenError') {
+                return {
+                    code: 400,
+                    message: 'Bad Request - Invalid token',
+                };
+            }
+    
+            console.error(Error, error);
+            return {
+                code: 500,
+                message: 'Internal Error, ' + error,
+            };
+        }
+    };
+
+    // ADD OUTFIT
+    addOutfit = async (req, res, next) => {
         try {
             if (req.file && req.file.cloudStoragePublicUrl) {
                 const imgUrl = req.file.cloudStoragePublicUrl
@@ -35,13 +104,13 @@ class _outfit {
                     include: Boolean(includeValue)
                 })
                 if (validation.error) {
-                    const errorDetails = validation.error.details.map(detail => {
+                    const errorDetails = validation.error.details.map(detail =>
                         detail.message
-                    })
+                    )
                     return {
                         status: false,
                         code: 422,
-                        error: errorDetails.join(', ')
+                        message: errorDetails
                     }
                 }
                 const token = req.headers.authorization.split(' ')[1]
@@ -85,9 +154,40 @@ class _outfit {
         }
     }
 
-    //GET OUTFIT
-    getOutfit = async (req) => {
+
+    // UPDATE OUTFIT
+    updateOutfit = async (req) => {
         try {
+            const idOutfit = Number(req.params.id)
+            let includeValue = req.body.include
+            if (includeValue === "false") {
+                includeValue === 0
+            }
+            if (includeValue === "true") {
+                includeValue === 1
+            }
+            const schema = Joi.object({
+                id: Joi.number().required(),
+                name: Joi.string(),
+                type: Joi.string(),
+                include: Joi.boolean()
+            })
+            const validation = schema.validate({
+                id: idOutfit,
+                name: req.body.name,
+                type: req.body.type,
+                include: Boolean(includeValue)
+            })
+            if (validation.error) {
+                const errorDetails = validation.error.details.map(detail =>
+                    detail.message
+                )
+                return {
+                    status: false,
+                    code: 422,
+                    error: errorDetails.join(', ')
+                }
+            }
             const token = req.headers.authorization.split(' ')[1]
             const decoded = jwt.verify(token, 'secret-code-token')
             const user = await prisma.user.findUnique({
@@ -96,49 +196,64 @@ class _outfit {
                     id: true,
                 }
             })
-
-            // Bad request
-            if (!user) {
-                return {
-                    status: false,
-                    code: 400,
-                    message: 'Bad Request - User not found',
-                };
-            }
-
-
-
-            // Retrieve outfits for the user
-            const outfits = await prisma.outfit.findMany({
-                where: { userId: user.id },
-                select: {
-                    id: true,
-                    nama: true, // Assuming nama is the name field in the outfit model
-                    type: true,
-                    photo: true, // Assuming photo is the imageUrl field in the outfit model
-                },
+            const validateIdOutfit = await prisma.outfit.findUnique({
+                where: {
+                    id: idOutfit,
+                    userId: user.id
+                }
             })
-
-            const listOutfits = outfits.map((outfit) => ({
-                id: outfit.id,
-                name: outfit.nama, // Adjust as needed
-                type: outfit.type,
-                imageUrl: outfit.photo, // Adjust as needed
-            }));
-
+            console.log(validateIdOutfit)
+            if (validateIdOutfit === null) {
+                return {
+                    code: 404,
+                    message: "No oufit"
+                }
+            }
+            if (req.body.name) {
+                await prisma.outfit.update({
+                    where: {
+                        id: idOutfit,
+                        userId: user.id
+                    },
+                    data: {
+                        nama: req.body.name
+                    }
+                })
+            }
+            if (req.body.include) {
+                await prisma.outfit.update({
+                    where: {
+                        id: idOutfit,
+                        userId: user.id
+                    },
+                    data: {
+                        include: Boolean(includeValue)
+                    }
+                })
+            }
+            if (req.body.type) {
+                await prisma.outfit.update({
+                    where: {
+                        id: idOutfit,
+                        userId: user.id
+                    },
+                    data: {
+                        type: req.body.type
+                    }
+                })
+            }
             return {
-                status: true,
                 code: 200,
-                data: listOutfits,
-            };
-        } catch (error) {
-            console.error(Error, error);
+                message: "success"
+            }
+        } catch (err) {
+            console.error('Error, ' + err)
             return {
                 code: 500,
-                message: "Internal Error, " + error,
-            };
+                message: "Internal server error outfit module"
+            }
         }
-    };
+    }
 }
 
 module.exports = new _outfit();
