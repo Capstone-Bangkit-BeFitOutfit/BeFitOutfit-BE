@@ -5,12 +5,12 @@ const middleware = async (req, res, next) => {
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
         try {
             token = req.headers.authorization.split(' ')[1]
+            console.log(token)
             const decoded = jwt.verify(token, 'secret-code-token')
             const currentTime = Math.floor(Date.now() / 1000);
             if (decoded.exp && decoded.exp <= currentTime) {
                 return res.status(401).send({ message: 'Unauthorized - Token has expired' });
             }
-            console.log(decoded.exp+" "+currentTime)
             const user = await prisma.user.findUnique({
                 where: { email: decoded.email },
                 select: {
@@ -48,17 +48,13 @@ const middleware = async (req, res, next) => {
                 return res.status(404).send({message: "Token has timed out!"})
             }
             console.error('Midleware Error:', error);
-            return {
-                status: false,
-                code: 404,
-                error
-            }
+            return res.status(404).send({message: "Bad - request"})
         }
     }
     if (!token) {
         res.status(401).send({
             status: false,
-            error: "No Authorize no token"
+            message: "No Authorize no token"
         })
     }
 }

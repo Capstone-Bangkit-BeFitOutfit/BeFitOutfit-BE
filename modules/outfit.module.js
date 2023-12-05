@@ -16,7 +16,6 @@ class _outfit {
                     message: 'Bad Request - Token is missing',
                 };
             }
-            console.log('Received Token:', token);
             const decoded = jwt.verify(token, 'secret-code-token')
             const user = await prisma.user.findUnique({
                 where: { email: decoded.email },
