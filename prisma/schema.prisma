@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url      = env("DATABASE_GCP")
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -15,6 +15,7 @@ model User {
   created_at DateTime    @default(now())
   updated_at DateTime    @updatedAt
   AuthUsers  AuthUsers[]
+  Outfit Outfit[]
 
   @@map("users")
 }
@@ -39,4 +40,18 @@ model AuthUsers {
   users      User     @relation(fields: [userId], references: [id])
 
   @@map("auth_users")
+}
+model Outfit{
+  id Int @id @default(autoincrement())
+  userId Int
+  usersId User @relation( fields: [userId], references:[id])
+  nama String @db.VarChar(100)
+  event String @db.VarChar(50)
+  photo String
+  include Boolean @default(false)
+  percentage Int
+  type String @db.VarChar(30)
+  created_at DateTime    @default(now())
+  updated_at DateTime    @updatedAt
+  @@map("outfit")
 }

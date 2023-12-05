@@ -2,17 +2,30 @@ const prisma = require('./database');
 const jwt = require('jsonwebtoken')
 const middleware = async (req, res, next) => {
     let token
-    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')){
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
         try {
             token = req.headers.authorization.split(' ')[1]
+            console.log(token)
             const decoded = jwt.verify(token, 'secret-code-token')
+            const currentTime = Math.floor(Date.now() / 1000);
+            if (decoded.exp && decoded.exp <= currentTime) {
+                return res.status(401).send({ message: 'Unauthorized - Token has expired' });
+            }
             const user = await prisma.user.findUnique({
                 where: { email: decoded.email },
                 select: {
                     id: true,
                 }
             })
-            console.log(decoded)
+
+            if (!user) {
+                return {
+                    status: false,
+                    code: 400,
+                    message: 'Bad Request - User not found',
+                };
+            }
+
             const authRole = await prisma.authUsers.findFirst({
                 where: { userId: user.id }
             })
@@ -29,18 +42,19 @@ const middleware = async (req, res, next) => {
                 })
             }
         } catch (error) {
-            console.error('Midleware Error:', error);
-            return {
-                status: false,
-                code: 404,
-                error
+            const process=String(error)
+            const textError = process.split(': ')
+            if(textError[0]==="TokenExpiredError"){
+                return res.status(404).send({message: "Token has timed out!"})
             }
+            console.error('Midleware Error:', error);
+            return res.status(404).send({message: "Bad - request"})
         }
     }
-    if(!token){
+    if (!token) {
         res.status(401).send({
-            status:false,
-            error:"No Authorize no token"
+            status: false,
+            message: "No Authorize no token"
         })
     }
 }
