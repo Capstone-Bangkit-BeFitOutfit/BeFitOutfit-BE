@@ -37,19 +37,21 @@ class _outfit {
                 where: { userId: user.id },
                 select: {
                     id: true,
-                    nama: true, 
+                    nama: true,
                     type: true,
-                    photo: true, 
+                    photo: true,
+                    include: true,
                 },
             })
             const listOutfits = outfits.map((outfit) => ({
                 id: outfit.id,
-                name: outfit.nama, 
+                name: outfit.nama,
                 type: outfit.type,
-                imageUrl: outfit.photo, 
+                imageUrl: outfit.photo,
+                include: outfit.include
             }));
             return {
-                status: true,
+                message: 'success',
                 code: 200,
                 data: listOutfits,
             };
@@ -60,7 +62,7 @@ class _outfit {
                     message: 'Bad Request - Invalid token',
                 };
             }
-    
+
             console.error(Error, error);
             return {
                 code: 500,
@@ -253,6 +255,54 @@ class _outfit {
             }
         }
     }
+
+    // DELETE OUTFIT
+    deleteOutfit = async (req) => {
+        try {
+            const idOutfit = Number(req.params.id);
+
+            const token = req.headers.authorization.split(' ')[1];
+            const decoded = jwt.verify(token, 'secret-code-token');
+            const user = await prisma.user.findUnique({
+                where: { email: decoded.email },
+                select: {
+                    id: true,
+                },
+            });
+
+            const validateIdOutfit = await prisma.outfit.findUnique({
+                where: {
+                    id: idOutfit,
+                    userId: user.id,
+                },
+            });
+
+            if (!validateIdOutfit) {
+                return {
+                    code: 404,
+                    message: 'Outfit not found',
+                };
+            }
+
+            // Delete the outfit
+            await prisma.outfit.delete({
+                where: {
+                    id: idOutfit,
+                },
+            });
+
+            return {
+                code: 200,
+                message: 'successfully deleted',
+            };
+        } catch (err) {
+            console.error('Error, ' + err);
+            return {
+                code: 500,
+                message: 'Internal server error outfit module',
+            };
+        }
+    };
 }
 
 module.exports = new _outfit();
