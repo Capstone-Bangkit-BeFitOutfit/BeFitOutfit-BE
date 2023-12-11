@@ -2,21 +2,17 @@ const express = require('express')
 const cors = require('cors');
 const routes = require('./routes');
 const morgan = require('morgan');
-// const userController = require('./userController')
 const app = express();
 const port = process.env.PORT;
-
 app.use(cors());
 app.use(morgan("dev"))
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
-
 app.get('/', async (req, res) => {
     res.status(200).json({
         message: 'Welcome to BeFitOutfit'
     })
 })
-// app.use('/login', userController)
  routes(app)
 
 app.listen(port,()=>{
