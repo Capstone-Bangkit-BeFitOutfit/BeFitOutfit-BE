@@ -27,7 +27,7 @@ outfitController.put('/:id', middleware, Multer.none(), async (req, res) => {
 })
 
 // url endpoint "http://localhost:8000/outfit/:id"
-outfitController.delete('/:id', middleware, async (req, res) => {
+outfitController.delete('/:id', middleware, m$storage.deleteToGcs, async (req, res) => {
     const data = await m$outfit.deleteOutfit(req);
     response.sendResponse(data, res);
 });
