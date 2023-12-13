@@ -12,8 +12,7 @@ userController.post('/addData', async(req, res)=>{
 })
 //url endpoint "http://localhost:8000/user/(id)1"
 userController.put('/:id',middleware, async(req, res)=>{
-    const userId = Number(req.params.id)
-    const data = await m$user.updateUser(userId, req.body)
+    const data = await m$user.updateUser(req)
     response.sendResponse(data, res)
 })
 module.exports = userController

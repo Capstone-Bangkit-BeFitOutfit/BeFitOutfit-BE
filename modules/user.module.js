@@ -3,16 +3,16 @@ const jwt = require('jsonwebtoken')
 const prisma = require('../helpers/database')
 const bcrypt = require('bcrypt');
 class _user {
-    updateUser = async (userId, body) => {
+    updateUser = async (req) => {
         try {
+            const userId = Number(req.params.id)
+            const body = req.body
             const schema = Joi.object({
-                username: Joi.string().required(),
-                email: Joi.string().required(),
-                password: Joi.string().required(),
+                username: Joi.string(),
+                email: Joi.string(),
+                password: Joi.string(),
             }).options({ abortEarly: false })
-
             const validation = schema.validate(body)
-
             //bad request
             if (validation.error) {
                 const errorDetails = validation.error.details.map(detail => {
@@ -25,7 +25,14 @@ class _user {
                     error: errorDetails.join(', ')
                 }
             }
-
+            const getUser = await prisma.user.findUnique({where: {id: userId}})
+            if (!getUser) {
+                return {
+                    status: false,
+                    code: 404, //user not found
+                    message: "User account not found"
+                }
+            }
             // Check if new username is already taken
             const isUsernameTaken = await prisma.user.findFirst({
                 where: {
@@ -33,7 +40,6 @@ class _user {
                     id: { not: userId }, // Ensure not comparing with itself
                 },
             });
-
             if (isUsernameTaken) {
                 return {
                     status: false,
@@ -41,40 +47,12 @@ class _user {
                     message: 'Username is already taken',
                 };
             }
-
-
-           
-
-
-            const getUser = await prisma.user.findUnique({
-                where: {
-                    id: userId
-                },
-                select: {
-                    username: true,
-                    email: true,
-                    password: true,
-                }
-            })
-
-
-
-            if (!bcrypt.compareSync(body.password, getUser.password)) {
-                return {
-                    status: false,
-                    code: 404, //user not found
-                    message: "User account not found"
-                }
-            }
-
-            
             const getRole = await prisma.role.findFirst({
                 where: { name: "user" },
                 select: {
                     id: true
                 }
             })
-
             //data pada token
             const user = await prisma.authUsers.findFirst({
                 where: {
@@ -107,7 +85,7 @@ class _user {
 
 
             //pengkodisian update
-            await prisma.user.update({
+            const update = await prisma.user.update({
                 where: { id: userId },
                 data: {
                     username: body.username,
@@ -119,8 +97,9 @@ class _user {
                 code: 201, //created
                 message: "Update success",
                 data: {
-                    "username": data.username,
-                    "email": data.email,
+                    "id":userId,
+                    "username": update.username,
+                    "email": update.email,
                     "token": token
                 }
             }
@@ -131,7 +110,7 @@ class _user {
             return {
                 status: false,
                 code: 500, //bad gateway
-                error
+                message:"Internal server error"
             }
         }
     }

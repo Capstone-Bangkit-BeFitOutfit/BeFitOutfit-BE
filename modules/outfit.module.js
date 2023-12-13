@@ -39,6 +39,7 @@ class _outfit {
                     id: true,
                     nama: true,
                     type: true,
+                    event:true,
                     photo: true,
                     include: true,
                 },
@@ -47,6 +48,7 @@ class _outfit {
                 id: outfit.id,
                 name: outfit.nama,
                 type: outfit.type,
+                event: outfit.event,
                 imageUrl: outfit.photo,
                 include: outfit.include
             }));
@@ -162,10 +164,10 @@ class _outfit {
             const idOutfit = Number(req.params.id)
             let includeValue = req.body.include
             if (includeValue === "false") {
-                includeValue === 0
+                includeValue = 0
             }
             if (includeValue === "true") {
-                includeValue === 1
+                includeValue = 1
             }
             const schema = Joi.object({
                 id: Joi.number().required(),
@@ -203,7 +205,6 @@ class _outfit {
                     userId: user.id
                 }
             })
-            console.log(validateIdOutfit)
             if (validateIdOutfit === null) {
                 return {
                     code: 404,
@@ -260,7 +261,6 @@ class _outfit {
     deleteOutfit = async (req) => {
         try {
             const idOutfit = Number(req.params.id);
-
             const token = req.headers.authorization.split(' ')[1];
             const decoded = jwt.verify(token, 'secret-code-token');
             const user = await prisma.user.findUnique({

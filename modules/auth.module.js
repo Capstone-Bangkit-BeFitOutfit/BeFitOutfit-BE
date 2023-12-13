@@ -148,6 +148,7 @@ class _auth {
                 status: 200,
                 message: "success",
                 data: {
+                    "id":getUser.id,
                     "username": data.username,
                     "email": data.email,
                     "token": token
