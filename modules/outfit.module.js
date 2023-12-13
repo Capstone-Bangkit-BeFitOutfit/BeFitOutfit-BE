@@ -39,7 +39,7 @@ class _outfit {
                     id: true,
                     nama: true,
                     type: true,
-                    event:true,
+                    event: true,
                     photo: true,
                     include: true,
                 },

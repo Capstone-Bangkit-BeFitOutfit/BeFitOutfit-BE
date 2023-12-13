@@ -5,7 +5,6 @@ const middleware = async (req, res, next) => {
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
         try {
             token = req.headers.authorization.split(' ')[1]
-            console.log(token)
             const decoded = jwt.verify(token, 'secret-code-token')
             const currentTime = Math.floor(Date.now() / 1000);
             if (decoded.exp && decoded.exp <= currentTime) {
