@@ -1,7 +1,7 @@
-const express = require('express')
 const cors = require('cors');
 const routes = require('./routes');
 const morgan = require('morgan');
+const express = require('express')
 const app = express();
 const port = process.env.PORT;
 app.use(cors());
@@ -13,8 +13,7 @@ app.get('/', async (req, res) => {
         message: 'Welcome to BeFitOutfit'
     })
 })
- routes(app)
-
+routes(app)
 app.listen(port,()=>{
     console.log(`Your application running in http://localhost:${port}`)
 })

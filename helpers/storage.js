@@ -31,7 +31,7 @@ class _storage {
 
             }
             const publicUrl = (filename) => {
-                return `https://storage.googleapis.com/befitoutfit/images/` + filename
+                return `https://storage.googleapis.com/data-befit/images/` + filename
             }
             const gcsname = `${Date.now()}-${req.file.originalname}`
             const file = bucket.file(`images/${gcsname}`)
